@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Customers.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(CustomerContext))]
     [Migration("20230428054746_Customers.CreateCustomersModel")]
     partial class CustomersCreateCustomersModel
     {

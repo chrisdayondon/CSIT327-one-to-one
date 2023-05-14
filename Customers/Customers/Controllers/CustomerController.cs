@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Customers.Context;
 using Customers.Models;
 using Microsoft.EntityFrameworkCore;
-
+using Customers.Repositories;
 
 namespace Customers.Controllers
 {
@@ -11,18 +11,18 @@ namespace Customers.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly DataContext _dataContext;
+        private IRepositories<Customer> _repository;
 
-        public CustomerController(DataContext dataContext)
+        public CustomerController(IRepositories<Customer> repository)
         {
-            _dataContext = dataContext;
+            _repository = repository;
         }
 
         // GET: api/<CustomerController>
         [HttpGet]
         public IActionResult GetAllCustomers()
         {
-            var customers = _dataContext.Customers.ToList();
+            var customers = _repository.GetAll();
             if (customers.Any())
                 return Ok(customers);
             else
@@ -33,10 +33,8 @@ namespace Customers.Controllers
         [HttpGet("{id}")]
         public IActionResult GetCustomer(int id)
         {
-            var desiredCustomer = _dataContext.Customers.
-                Where(c => c.Id == id)
-                .FirstOrDefault();
-
+            var desiredCustomer = _repository.Get(id);
+                
             if (desiredCustomer != null)
                 return Ok(desiredCustomer);
             else
@@ -50,14 +48,13 @@ namespace Customers.Controllers
             if (customer == null)
                 return BadRequest();
 
-            if (_dataContext.Customers.Where(c => c.Name.Equals(customer.Name)).FirstOrDefault() != null)
+            if (_repository.GetAll().Where(c => c.Name.Equals(customer.Name)).FirstOrDefault() != null)
                 return BadRequest($"Customer {customer.Name} already exist");
 
             if (customer.Gender != 'M' && customer.Gender != 'F')
                 return BadRequest($"Customer {customer.Name} gender is unknown");
 
-            _dataContext.Customers.Add(customer);
-            _dataContext.SaveChanges();
+          _repository.Add(customer);
 
             return Ok(customer);
         }
@@ -69,23 +66,18 @@ namespace Customers.Controllers
             if (customer == null)
                 return BadRequest();
 
-            var desiredCustomer = _dataContext.Customers.Where(c => c.Id == customer.Id).FirstOrDefault();
+            var desiredCustomer = _repository.GetAll().Where(c => c.Id == customer.Id).FirstOrDefault();
 
             if (desiredCustomer == null)
             {
-                
-                _dataContext.Customers.Add(customer);
-                _dataContext.SaveChanges();
+                _repository.Add(customer);
                 return Ok(customer);
             }
             else
             {
-                
-                desiredCustomer.Name = customer.Name;
-                desiredCustomer.Gender = customer.Gender;
-                desiredCustomer.Address = customer.Address;
-                desiredCustomer.Age = customer.Age;
-                _dataContext.SaveChanges();
+
+                _repository.Update(desiredCustomer, customer);
+               
                 return Ok(desiredCustomer);
             }
         }
@@ -94,15 +86,14 @@ namespace Customers.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteCustomer(int id)
         {
-            var desiredCustomer = _dataContext.Customers.Where(c => c.Id == id).FirstOrDefault();
+            var desiredCustomer = _repository.GetAll().Where(c => c.Id == id).FirstOrDefault();
 
             if (desiredCustomer == null)
             {
                 return NotFound($"No customer with id {id} exists.");
             }
 
-            _dataContext.Customers.Remove(desiredCustomer);
-            _dataContext.SaveChanges();
+            _repository.Delete(desiredCustomer);
 
             return NoContent();
         }

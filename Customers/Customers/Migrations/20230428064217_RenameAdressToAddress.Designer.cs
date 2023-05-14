@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Customers.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(CustomerContext))]
     [Migration("20230428064217_RenameAdressToAddress")]
     partial class RenameAdressToAddress
     {
