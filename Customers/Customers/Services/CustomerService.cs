@@ -12,7 +12,7 @@ namespace Customers.Services
         {
             _repository = repository;
         }
-        public void Add(CustomerDTO customerDto)
+        public void Add(CreateCustomerDTO customerDto)
         {
             var customerHasSameName = _repository.GetAll()
                 .Where(c => c.Name.Equals(customerDto.Name))
