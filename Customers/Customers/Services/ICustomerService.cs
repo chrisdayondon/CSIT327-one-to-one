@@ -8,8 +8,8 @@ namespace Customers.Services
     {
         IEnumerable<CustomerDTO> GetAll();
         void Add(CreateCustomerDTO entity);
-        CustomerDTO Update(CustomerDTO entity, CustomerDTO updatedEntity);
-        void Delete(CustomerDTO entity);
+        CustomerDTO Update(CustomerDTO entity);
+        void Delete(int id);
         CustomerDTO Get(int id);
 
     }

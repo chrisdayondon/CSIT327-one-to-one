@@ -14,6 +14,13 @@ namespace Customers.Services
         }
         public void Add(CreateCustomerDTO customerDto)
         {
+            
+               
+
+                if (customerDto.Gender != 'M' && customerDto.Gender != 'F')
+                    throw new Exception("invalid gender");
+               
+
             var customerHasSameName = _repository.GetAll()
                 .Where(c => c.Name.Equals(customerDto.Name))
                 .FirstOrDefault() != null;
@@ -26,18 +33,25 @@ namespace Customers.Services
                 Name = customerDto.Name,
                 Gender = customerDto.Gender,
                 Address = customerDto.Address,
-                Age = customerDto.Age
+                Age = customerDto.Age,
+                RewardCard = new RewardCard
+                {
+                    Points = customerDto.Points,
+                    StoreIssued = customerDto.StoreIssued,
+                }
+
+                
             };
 
             _repository.Add(customerModel);
         }
 
-        public void Delete(CustomerDTO customerDto)
+        public void Delete(int id)
         {
-            var desiredCustomer = _repository.Get(customerDto.Id);
+            var desiredCustomer = _repository.Get(id);
 
             if (desiredCustomer == null)
-                throw new Exception($"No customerDto with id {customerDto.Id} exists.");
+                throw new Exception($"No customerDto with id {id} exists.");
 
             _repository.Delete(desiredCustomer);
         }
@@ -52,6 +66,8 @@ namespace Customers.Services
                 Age = customerModel.Age,
                 Address = customerModel.Address,
                 Gender = customerModel.Gender,
+                Points = customerModel.RewardCard.Points,
+                StoreIssued = customerModel.RewardCard.StoreIssued,
             };
         }
 
@@ -65,10 +81,13 @@ namespace Customers.Services
 				Gender = c.Gender,
 				Age = c.Age,
 				Address = c.Address,
+                Points = c.RewardCard.Points,
+                StoreIssued = c.RewardCard.StoreIssued,
+
 			});
         }
 
-        public CustomerDTO Update(CustomerDTO customerDTO, CustomerDTO updatedCustomerDTO)
+        public CustomerDTO Update(CustomerDTO customerDTO)
         {
             var desiredCustomer = _repository.Get(customerDTO.Id);
 
@@ -81,6 +100,12 @@ namespace Customers.Services
                     Age = customerDTO.Age,
                     Address = customerDTO.Address,
                     Gender = customerDTO.Gender,
+                    RewardCard = new RewardCard
+                    {
+                        Points = customerDTO.Points,
+                        StoreIssued= customerDTO.StoreIssued,
+                    }
+                    
                 });
                 return customerDTO;
             }
@@ -93,6 +118,13 @@ namespace Customers.Services
                     Age = customerDTO.Age,
                     Address = customerDTO.Address,
                     Gender = customerDTO.Gender,
+                    RewardCard = new RewardCard
+                    {
+                        Points = customerDTO.Points,
+                        StoreIssued = customerDTO.StoreIssued,
+                    }
+                    
+                    
                 });
                 return new CustomerDTO
                 {
@@ -101,6 +133,8 @@ namespace Customers.Services
                     Age = customerDTO.Age,
                     Address = desiredCustomer.Address,
                     Gender = desiredCustomer.Gender,
+                    Points = desiredCustomer.RewardCard.Points,
+                    StoreIssued = desiredCustomer.RewardCard.StoreIssued,
                 };
             }
         }

@@ -1,5 +1,6 @@
 ﻿using Customers.Context;
 using Customers.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Customers.Repositories
 {
@@ -30,13 +31,14 @@ namespace Customers.Repositories
         {
             return _context.Customers.
                Where(c => c.Id == id)
+                .Include(c => c.RewardCard)
                .FirstOrDefault();
         }
 
         public IEnumerable<Customer> GetAll()
         {
             
-            return _context.Customers.ToList(); 
+            return _context.Customers.Include(c => c.RewardCard).ToList();
          
         }
 
@@ -45,7 +47,9 @@ namespace Customers.Repositories
             customer.Name = updatedCustomer.Name;
             customer.Gender = updatedCustomer.Gender;
             customer.Address = updatedCustomer.Address;
-            customer.Age = updatedCustomer.Age;
+            customer.Age = updatedCustomer.Age; 
+            customer.RewardCard.StoreIssued = updatedCustomer.RewardCard.StoreIssued;
+            customer.RewardCard.Points = updatedCustomer.RewardCard.Points;
       
             
             _context.SaveChanges();

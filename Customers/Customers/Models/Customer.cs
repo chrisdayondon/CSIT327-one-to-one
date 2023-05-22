@@ -7,5 +7,9 @@
         public string Address { get; set; } = string.Empty;
         public char Gender { get; set; }
         public int Age { get; set; }
+        public RewardCard RewardCard { get; set; }
+
+
     }
+
 }
